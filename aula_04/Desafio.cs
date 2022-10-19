@@ -30,34 +30,25 @@ namespace Desafio
             // Console.WriteLine(not.getOutput());
 
 
-            Input a = new Input(true);
-            Input b = new Input(true);
 
-            Input a_ramify = new Input(a.State);
-            Input b_ramify = new Input(b.State);
+            // Input a = new Input(false);
+            // Input b = new Input(false);
 
-            GateNOT not_a = new GateNOT();
-            GateNOT not_b = new GateNOT();
+            // GateXOR xor = new GateXOR();
 
-            GateAND and_a = new GateAND();
-            GateAND and_b = new GateAND();
+            // a.Connect(xor);
+            // b.Connect(xor);
 
-            a.Connect(not_a);
-            b.Connect(not_b);
+            // Console.WriteLine(xor.GetOutput());
 
-            not_a.Connect(and_a);
-            not_b.Connect(and_b);
 
-            a_ramify.Connect(and_b);
-            b_ramify.Connect(and_a);
 
-            GateOR or = new GateOR();
-
-            and_a.Connect(or);
-            and_b.Connect(or);
-
-            Console.WriteLine(or.getOutput());
-
+            // SumCircuit circ = new SumCircuit(false, true);
+            // Console.WriteLine(circ.OutputNext.State + " " + circ.OutputXor.State);
+            SumOperator sum = new SumOperator(true, true, true, true);
         }
+
+
+        
     }
 }   
