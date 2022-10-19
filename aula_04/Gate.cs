@@ -1,49 +1,36 @@
 using System;
 namespace Desafio
 {
-
     public abstract class Component
     {
-        public Gate connectedGate { get; set; }
+        public Gate ConnectedGate { get; set; }
         public bool isConnected { get; protected set;}
         public abstract void Connect(Gate gate);
     }
 
     public abstract class Gate : Component
     {
-        
-        public Dot Output { get; set; }
+        public Input InputA { get; set; }
+        public Input InputB { get; set; }
+        public Input Output { get; set; }
 
         public Gate() 
         {
-            this.Output = new OutputDot();
-            this.Output.connectedGate = this;
+            this.Output = new Input();
+            this.Output.ConnectedGate = this;
         }
 
         public bool getOutput() { return this.Output.State; }
-
-        public abstract bool AddInput(Dot dot);
-        public abstract bool IsFull();
-        protected abstract void SetOutput();
         public void Update() { SetOutput(); }
-
+        
         public override void Connect(Gate gate)
         {
             if (gate.AddInput(this.Output))
-                connectedGate = gate;
+                ConnectedGate = gate;
                 isConnected = true;
         }
 
-
-    }
-
-    public class GateAND : Gate
-    {
-        public Dot InputA { get; set; }
-        public Dot InputB { get; set; }
-
-
-        public override bool AddInput(Dot dot)
+        public virtual bool AddInput(Input dot)
         {
             if (!IsFull())
             {
@@ -51,68 +38,42 @@ namespace Desafio
                 else if (InputB == null) { InputB = dot; }
                 
                 if(IsFull()) { SetOutput();}
-
+            
                 return true;
             }
             return false;
         }
 
+        public virtual bool IsFull() { return (InputA != null) && (InputB != null); }
+
+        protected abstract void SetOutput();
+    }
+
+    public class GateAND : Gate
+    {
         protected override void SetOutput()
         {
             this.Output.State = this.InputA.State && this.InputB.State;
-        }
 
-        public override bool IsFull()
-        {
-            return (InputA != null) && (InputB != null);
+            if (isConnected)
+                ConnectedGate.Update();
         }
-
     }
 
     public class GateOR : Gate
     {
-        public Dot InputA { get; set; }
-        public Dot InputB { get; set; }
-
-        public override bool AddInput(Dot dot)
-        {
-            if (!IsFull())
-            {
-                if (InputA == null) { InputA = dot; }
-                else if (InputB == null) { InputB = dot; }
-
-                if(IsFull()) 
-                { 
-                    SetOutput();
-                     
-                }
-
-                return true;
-            }
-            return false;
-        }
-
         protected override void SetOutput()
         {
             Output.State = (InputA.State || InputB.State);
 
             if (isConnected)
-            {
-                connectedGate.Update();
-            }
-        }
-
-        public override bool IsFull()
-        {
-            return (InputA != null) && (InputB != null);
+                ConnectedGate.Update();
         }
     }
 
     public class GateNOT : Gate
     {
-        public Dot Input { get; set; }
-
-        public override bool AddInput(Dot dot)
+        public override bool AddInput(Input dot)
         {
             if(!IsFull())
             {
@@ -126,13 +87,14 @@ namespace Desafio
         protected override void SetOutput()
         {
             this.Output.SwitchState();
-
-            
+            if (isConnected)
+                ConnectedGate.Update();
         }
 
         public override bool IsFull()
         {
-            return (Input != null);
+            return (InputA != null);
         }
     }
+    
 }
