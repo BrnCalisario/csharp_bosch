@@ -20,8 +20,8 @@ namespace Desafio
             this.Output.ConnectedGate = this;
         }
 
-        public bool GetOutput() { return this.Output.State; }
-        public void Update() { SetOutput(); }
+        public bool GetOutput() => this.Output.State; 
+        public void Update() => SetOutput();
         
         public override void Connect(Gate gate)
         {
@@ -91,53 +91,55 @@ namespace Desafio
                 ConnectedGate.Update();
         }
 
-        public override bool IsFull()
-        {
-            return (InputA != null);
-        }
+        public override bool IsFull() => (InputA != null);
+
     }
 
     public class GateXOR : Gate
     {
-        private GateNOT notGateA = new GateNOT();
-        private GateNOT notGateB = new GateNOT();
-
-        private GateAND andGateA = new GateAND();
-        private GateAND andGateB = new GateAND(); 
-
-        private GateOR orGate = new GateOR();
-
         protected override void SetOutput()
         {
-            Input ramifyA = new Input(InputA.State);
-            Input ramifyB = new Input(InputB.State);
-
-            // Console.WriteLine(ramifyA.State + " " + ramifyB.State);
-            
-            InputA.Connect(notGateA);
-            InputB.Connect(notGateB);
-
-            // Console.WriteLine(notGateA.GetOutput() + " " + notGateB.GetOutput());
-
-            notGateA.Connect(andGateA);
-            ramifyB.Connect(andGateA);
-
-            notGateB.Connect(andGateB);
-            ramifyA.Connect(andGateB);
-
-            // Console.WriteLine(andGateB.GetOutput() + " " + andGateB.GetOutput());
-
-            andGateA.Connect(orGate);
-            andGateB.Connect(orGate);
-
-            // Console.WriteLine(orGate.GetOutput());
-
-            this.Output.State = orGate.GetOutput();
-
-            if(isConnected)
-                ConnectedGate.Update();
-
+            this.Output.State = InputA.State ^ InputB.State;
         }
+        // private GateNOT notGateA = new GateNOT();
+        // private GateNOT notGateB = new GateNOT();
+
+        // private GateAND andGateA = new GateAND();
+        // private GateAND andGateB = new GateAND(); 
+
+        // private GateOR orGate = new GateOR();
+
+        // protected override void SetOutput()
+        // {
+        //     Input ramifyA = new Input(InputA.State);
+        //     Input ramifyB = new Input(InputB.State);
+
+        //     // Console.WriteLine(ramifyA.State + " " + ramifyB.State);
+            
+        //     InputA.Connect(notGateA);
+        //     InputB.Connect(notGateB);
+
+        //     // Console.WriteLine(notGateA.GetOutput() + " " + notGateB.GetOutput());
+
+        //     notGateA.Connect(andGateA);
+        //     ramifyB.Connect(andGateA);
+
+        //     notGateB.Connect(andGateB);
+        //     ramifyA.Connect(andGateB);
+
+        //     // Console.WriteLine(andGateB.GetOutput() + " " + andGateB.GetOutput());
+
+        //     andGateA.Connect(orGate);
+        //     andGateB.Connect(orGate);
+
+        //     // Console.WriteLine(orGate.GetOutput());
+
+        //     this.Output.State = orGate.GetOutput();
+
+        //     if(isConnected)
+        //         ConnectedGate.Update();
+
+        
 
     }
 

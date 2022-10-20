@@ -41,11 +41,46 @@ namespace Desafio
 
             // Console.WriteLine(xor.GetOutput());
 
+            // b.ChangeState();
+
+            // Console.WriteLine(xor.GetOutput());
+            
+            // b.ChangeState();
+            // a.ChangeState();
+
+            // Console.WriteLine(xor.GetOutput());
+
+            // b.ChangeState();
+    
+            // Console.WriteLine(xor.GetOutput());
 
 
-            // SumCircuit circ = new SumCircuit(false, true);
-            // Console.WriteLine(circ.OutputNext.State + " " + circ.OutputXor.State);
-            SumOperator sum = new SumOperator(true, true, true, true);
+            Input a = new Input(true);
+            Input b = new Input(false);
+
+            Input ramA = new Input(a.State);
+            Input ramB = new Input(b.State);
+
+
+            GateAND and = new GateAND();
+            GateOR or = new GateOR();
+
+            a.Connect(and);
+            b.Connect(and);
+
+            ramA.Connect(or);
+            ramB.Connect(or);
+
+            Console.WriteLine(and.GetOutput() + " " + or.GetOutput());
+
+            
+
+            Console.WriteLine(a.State + " " + ramA.State);
+
+            a.ChangeState();
+
+            Console.WriteLine(a.State + " " + ramA.State);
+
         }
 
 
