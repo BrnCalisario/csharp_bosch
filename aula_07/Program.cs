@@ -7,6 +7,7 @@ namespace JogoDaMoeda
         protected bool decision = true;
         public int Moedas { get; set; } = 3;
         public abstract bool Decide();
+        public virtual void Reset() {}
         public virtual void Recebe(bool resposta) {}
     }  
 
@@ -25,8 +26,9 @@ namespace JogoDaMoeda
         private bool hisLastMove { get; set; } = true;
 
         public override bool Decide() => hisLastMove;
-
         public override void Recebe(bool resposta) => this.hisLastMove = resposta;
+        public override void Reset() { hisLastMove = true; }
+        
     }
 
     public class Rancoroso : Player
@@ -38,6 +40,8 @@ namespace JogoDaMoeda
         {
             if (!resposta) { this.decision = false; }
         }
+
+        public override void Reset() { decision = true; }
     }
 
     public class World
@@ -57,26 +61,40 @@ namespace JogoDaMoeda
 
         public int Falidos { get; set; } = 0;
         public int Total { get; set; } 
+        public int RoundQuant = 3;
 
         public void Game()
         {
             Random rnd = new Random();
             Player p1, p2;
-            do
+            
+            for (int i = 0; i < 50; i++)
             {
-                p1 = Jogadores[rnd.Next(0, Jogadores.Length)];
-                p2 = Jogadores[rnd.Next(0, Jogadores.Length)];
-            } while ((p1.Moedas < 0 || p2.Moedas < 0) || p1 == p2);
-            
-            Console.WriteLine(p1 + " " + p1.Moedas);
-            Console.WriteLine(p2 + " " + p2.Moedas + "\n" + Total);
-            
+                do
+                {
+                    p1 = Jogadores[rnd.Next(0, Jogadores.Length)];
+                    p2 = Jogadores[rnd.Next(0, Jogadores.Length)];
+                } while ((p1.Moedas < 0 || p2.Moedas < 0) || p1 == p2);
+                
+                if (p1.Moedas > 0 && p2.Moedas > 0)
+                {
+                    p1.Reset();
+                    p2.Reset();
+                    for (int j = 0; j < RoundQuant; j++)
+                    {
+                        Console.WriteLine(p1 + " " + p1.Moedas);
+                        Console.WriteLine(p2 + " " + p2.Moedas + "\n" + Total);
+                        
+                        Round(p1, p2);
 
-            Round(p1, p2);
-
-            Console.WriteLine(p1 + " " + p1.Moedas);
-            Console.WriteLine(p2 + " " + p2.Moedas+ "\n" + Total);
-        
+                        Console.WriteLine(p1 + " " + p1.Moedas);
+                        Console.WriteLine(p2 + " " + p2.Moedas+ "\n" + Total);
+                    }
+                }
+            
+            }
+            Console.WriteLine("Falidos: " + Falidos);
+            
 
         }
 
@@ -84,6 +102,8 @@ namespace JogoDaMoeda
         {
             var r1 = p1.Decide();
             var r2 = p2.Decide();
+
+            if (p1.Moedas == 0 || p2.Moedas == 0) { return; }
 
             if (r1) { p1.Moedas--;}
             if (r2) { p2.Moedas--;}
