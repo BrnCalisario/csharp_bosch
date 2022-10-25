@@ -7,12 +7,12 @@
 // Conter .Add(int i), bool .Contains(int i)
 
 BinaryTree<string> bt = new BinaryTree<string>();
-bt.Add("tESTE");
-bt.Add("a");
-bt.Add("B");
-bt.Add("testes");
+bt.Add("Teste");
+bt.Add("abc");
+bt.Add("Thiago");
+bt.Add("Portugol");
 
-Console.WriteLine(bt.Contains("testes"));
+Console.WriteLine(bt.Contains("abc"));
 
 public class BinaryTree<T>
     where T : IComparable<T>
@@ -23,7 +23,7 @@ public class BinaryTree<T>
 
     public void Add(T i)
     {
-        if (this.Value == null)
+        if (this.Value == null || this.Value.CompareTo(default(T)) == 0)
         {
             this.Value = i;
         }
