@@ -1,11 +1,11 @@
 public abstract class Machine
 {
     public int Price { get; protected set; }
-    public string? Name { get; protected set;}
-    public string? Description { get; protected set; }
+    public string Name { get; protected set;}
+    public string Description { get; protected set; }
     public int Power { get; protected set; }
 
-    public string displayInfo() => $"Preço: R${this.Price} | Poder: {this.Power}/click";
+    public string displayInfo() => $"Preço: R${this.Price} | Poder: {this.Power} p/click";
 
     public virtual int UpdateClick() => this.Power;
 
@@ -16,7 +16,7 @@ public class Rolo : Machine
     public Rolo()
     {
         this.Name = "Rolo de Massa";
-        this.Description = "O bom e velho Rolo para prepara a massa dos seus salgados";
+        this.Description = "O bom e velho Rolo para preparar a massa dos seus salgados";
         this.Power = 5;
         this.Price = 10;
     }

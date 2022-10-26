@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using System;
 
 public class Program
 {
@@ -9,7 +10,6 @@ public class Program
         while (true)
         {
             Game g = new Game();
-
             bool shopState = false;
 
 
@@ -19,14 +19,18 @@ public class Program
                 if (!shopState)
                 {
                     g.DrawMain();
-                    if (Console.ReadKey().Key == ConsoleKey.D0)
+                    var click = Console.ReadKey().Key;
+
+                    if (click == ConsoleKey.D0)
                         g.Salgados++;
-                    else if (Console.ReadKey().Key == ConsoleKey.D1)
+                    else if (click == ConsoleKey.D1)
                         shopState = true;
                 } 
                 else
                 {
                     g.DrawShop();
+                    if(Console.ReadKey().Key == ConsoleKey.D0)
+                        shopState = false;
                 }
 
 
@@ -42,6 +46,21 @@ public class Game
 {
     public int Salgados { get; set; }
     Machine Rolo = new Rolo();
+    Machine Batedeira = new Batedeira();
+    Machine Chapa = new Chapa();
+    Machine Cafeteira = new Cafeteira();
+    Machine Forno = new Forno();
+
+    Machine[] Machines = new Machine[5];
+
+    public Game()
+    {
+        Machines[0] = Rolo;
+        Machines[1] = Batedeira;
+        Machines[2] = Chapa;
+        Machines[3] = Cafeteira;
+        Machines[4] = Forno;
+    }
 
     public void DrawMain()
     {
@@ -58,7 +77,15 @@ public class Game
 
     public void DrawShop()
     {
-        Console.WriteLine(Visual.DoubleLabel(new string[] {Rolo.Name, Rolo.Description}));
+        Console.WriteLine(Visual.TitleLabel("CASAS BAHIA"));
+        
+        int count = 0;
+        foreach(var maq in this.Machines)
+        {   
+            count++;
+            string str = $"{maq.Name} | {maq.displayInfo()} - [{count}]";
+            Console.WriteLine(Visual.DoubleLabel(new string[] {str, maq.Description}));
+        }   
     }
 }
 
@@ -85,21 +112,66 @@ public class Visual
         int maiorLength = 0;
         for(int i = 0; i < labelTexts.Length; i++)
         {
-            if (labelTexts[0].Length > maiorLength)
+            if (labelTexts[i].Length > maiorLength)
             {
-                maiorLength = labelTexts[0].Length;
+                maiorLength =  $"║ {labelTexts[i]} ║".Length;
             }
         }
 
         string pipe = "";
-        while (pipe.Length < (maiorLength - 2))
+        while (pipe.Length < (75 - 2))
         {
             pipe += "═";
         }
         string top = "╔" + pipe + "╗";
         string bottom = "╚" + pipe + "╝";
 
-        return "";
+
+        string result = "";
+        result += top + "\n";
+        foreach(var i in labelTexts)
+        {
+            var aux = $"║ {i}";
+            while(aux.Length < (75 - 1))
+            {
+                aux += " ";
+            }
+            aux += "║";
+            result += aux + "\n";
+        }
+        result += bottom;
+
+        return result;
+    }
+
+    public static string TitleLabel(string title)
+    {
+        string label = "║";
+         
+        while(label.Length < 32)
+        {
+            label += " ";
+        }
+
+        label += title;
+
+        while(label.Length < 73)
+        {
+            label += " ";
+        }
+        
+        label += " ║";
+
+        string pipe = "";
+        while (pipe.Length < (75 - 2))
+        {
+            pipe += "═";
+        }
+
+        string top = "╔" + pipe + "╗";
+        string bottom = "╚" + pipe + "╝";
+
+        return top + "\n" + label + "\n" + bottom;
     }
 
     public static string sideBySide(string label1, string label2)
