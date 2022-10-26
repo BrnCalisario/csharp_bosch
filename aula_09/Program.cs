@@ -3,6 +3,7 @@
     public int Codigo { get; private set; }
     public string Nome { get; private set; }
     public int CargaHoraria { get; private set; }
+    public float MediaGeral { get; set; }
 
     public Curso(int codigo, string nome, int cargaH)
     {
@@ -25,6 +26,7 @@ public class Aluno
     public int CodCurso { get; private set; }
     public int Matricula { get; private set; }
     public string Nome { get; private set; }
+    public float[] Notas { get; set; } = new float[2];
 
     public Aluno(int codCurso, int matricula, string nome)
     {
@@ -33,12 +35,20 @@ public class Aluno
         this.Nome = nome;
     }
 
+
+    public float GetMedia()
+    {
+        float media = 0;
+        foreach (var nota in Notas)
+            media += nota;
+        return media / Notas.Length;
+    }
+
     public override string ToString()
     {
         return
-            "Nome do Aluno: " + this.Nome +
-            " | Matrícula: " + this.Matricula +
-            " | Código do curso: " + this.CodCurso;
+            "Aluno: " + this.Nome +
+            " | Matrícula: " + this.Matricula;
     }
 }
 
@@ -81,16 +91,20 @@ class Program
         throw new KeyNotFoundException();
     }
 
-    public static Aluno InputAluno()
+    public Aluno InputAluno()
     {
         Console.Write("Digite o código do curso desejado: ");
-        int codcurso = Convert.ToInt16(Console.ReadLine());
+        int codcurso = 0;
 
-        count += 1;
-        int matricula = count;
+        codcurso = Convert.ToInt16(Console.ReadLine());
+        if (!this.containsID(codcurso))
+            throw new InvalidDataException();
 
         Console.Write("\nDigite o nome do aluno: ");
         string nome = Console.ReadLine();
+
+        count += 1;
+        int matricula = count;
 
         Console.WriteLine("Aluno " + nome + " cadastrado com sucesso!");
         Console.ReadKey();
@@ -114,6 +128,18 @@ class Program
         return new Curso(cod, nome, carga);
     }
 
+    public void EnumerateCursos()
+    {
+        for (int i = 0; i < this.Cursos.Count; i++)
+            Console.WriteLine($"{i + 1} > {this.Cursos[i].Nome}");
+    }
+
+    public static void EnumerateAlunos(List<Aluno> alunosList)
+    {
+        for (int i = 0; i < alunosList.Count; i++)
+            Console.WriteLine($"{i + 1} > {alunosList[i]}");
+    }
+
     static void notImplemented()
     {
         Console.Clear();
@@ -121,9 +147,54 @@ class Program
         Console.ReadKey();
     }
 
+    void PrintEstatisticas()
+    {
+        if (this.Cursos.Count == 0)
+        {
+            Console.WriteLine("Nenhum curso cadastrado!");
+            return;
+        }
+
+        foreach (var curso in this.Cursos)
+        {
+            List<Aluno> alunosDoCurso = null;
+            try
+            {
+                alunosDoCurso = getAlunosByID(curso.Codigo);
+            }
+            catch
+            {
+
+            }
+
+            if (!(alunosDoCurso == null))
+            {
+                float mediaGeral = 0;
+                foreach (var aluno in alunosDoCurso)
+                {
+                    mediaGeral += aluno.GetMedia();
+                }
+                mediaGeral = mediaGeral / alunosDoCurso.Count;
+
+                curso.MediaGeral = mediaGeral;
+                Console.WriteLine($"> {curso.Nome} - {curso.MediaGeral} - Cód. do Curso {curso.Codigo} - Quant. Alunos Cadastrados {alunosDoCurso.Count}");
+                if (alunosDoCurso.Count > 0)
+                    foreach (var aluno in alunosDoCurso)
+                    {
+                        Console.WriteLine($" > {aluno.Nome} - Média: {aluno.GetMedia()}");
+                    }
+            }
+            else
+            {
+                Console.WriteLine($"> {curso.Nome} - Cód. do Curso {curso.Codigo}");
+                Console.WriteLine(" > Sem alunos cadastrados");
+            }
+        }
+    }
+
     static void PrintMenu()
     {
-        Console.WriteLine("___SYS ESCOLA___");
+        Console.WriteLine("_____SYS ESCOLA_____");
         Console.WriteLine("1 - Cadastrar Curso");
         Console.WriteLine("2 - Listar Cursos");
         Console.WriteLine("3 - Cadastrar Alunos");
@@ -137,7 +208,16 @@ class Program
         Console.Clear();
         PrintMenu();
         Console.Write("Escolha: ");
-        int resposta = Convert.ToInt16(Console.ReadLine());
+        int resposta = -1;
+        try
+        {
+            resposta = Convert.ToInt16(Console.ReadLine());
+        }
+        catch
+        {
+            return;
+        }
+
 
         switch (resposta)
         {
@@ -158,7 +238,7 @@ class Program
             case 2:
                 Console.Clear();
                 Console.WriteLine("Cursos Cadastrados");
-                this.Cursos.printList();
+                this.Cursos.PrintList();
                 Console.ReadKey();
                 break;
 
@@ -170,27 +250,58 @@ class Program
                         this.Alunos.Add(InputAluno());
                         break;
                     }
+                    catch (InvalidDataException)
+                    {
+                        Console.WriteLine("Código para curso inválido!\n");
+                        Console.ReadKey();
+                        break;
+                    }
                     catch
                     {
-                        Console.WriteLine("Valor inválido, tente novamente!\n");
+                        Console.WriteLine("Valores inválido, tente novamente!\n");
+                        Console.ReadKey();
                     }
                 }
-
-                this.Alunos.Add(InputAluno());
                 break;
 
             case 4:
 
-                foreach (var curso in this.Cursos)
+                Console.WriteLine("Digite o número do curso desejado: ");
+                EnumerateCursos();
+                Console.Write("Escolha: ");
+                int escolha = Convert.ToInt16(Console.ReadLine());
+
+                if (escolha > 0 && escolha <= this.Cursos.Count)
                 {
-                    getAlunosByID(curso.Codigo).printList();
-                    Console.ReadKey();
+                    List<Aluno> alunos_encontrados = getAlunosByID(this.Cursos[escolha - 1].Codigo);
+                    EnumerateAlunos(alunos_encontrados);
+                    Console.Write("Escolha o aluno que deseja dar nota: ");
+                    int escolha_aluno = Convert.ToInt16(Console.ReadLine());
+
+                    if (escolha_aluno > 0 && escolha <= alunos_encontrados.Count)
+                    {
+                        Aluno aluno = alunos_encontrados[escolha_aluno - 1];
+                        Console.WriteLine(aluno + " | Curso: " + getCursoByID(aluno.CodCurso).Nome);
+
+                        Console.WriteLine("Insira a nota 1: ");
+                        float nota1 = (float)(Convert.ToDouble(Console.ReadLine()));
+
+                        Console.WriteLine("Insira a nota 2: ");
+                        float nota2 = (float)(Convert.ToDouble(Console.ReadLine()));
+
+                        aluno.Notas = new float[] { nota1, nota2 };
+                        Console.WriteLine("Notas adicionadas com sucesso!");
+                        Console.ReadKey();
+                    }
+
                 }
+
 
                 break;
             case 5:
-                Console.WriteLine("Quantidade de cursos cadastrados: " + this.Cursos.Count);
-                Console.WriteLine("Quantidade de alunos cadastrados: " + this.Alunos.Count);
+                // Console.WriteLine("Quantidade de cursos cadastrados: " + this.Cursos.Count);
+                // Console.WriteLine("Quantidade de alunos cadastrados: " + this.Alunos.Count);
+                PrintEstatisticas();
                 Console.ReadKey();
                 break;
             case 6:
@@ -219,9 +330,10 @@ public class Application
 
 public static class MyExtensionMethods
 {
-    public static void printList<T>(this List<T> list)
+    public static void PrintList<T>(this List<T> list)
     {
         foreach (var item in list)
             Console.WriteLine(item);
     }
+
 }
