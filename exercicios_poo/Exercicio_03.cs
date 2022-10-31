@@ -6,7 +6,9 @@ public static class ProgramaEx03
 {
     public static void Programa()
     {
+
         List<Animal> pets = new List<Animal>();
+        AnimalFactory animalFactory = new AnimalFactory();
 
         for(int i = 0; i < 5; i++)
         {
@@ -18,26 +20,41 @@ public static class ProgramaEx03
             Console.Write($"Informe o nome do pet: ");
             string nome = Console.ReadLine();
 
-
+            pets.Add(animalFactory.GetAnimal(nome, tipo));
         }
+
+        animalFactory.FactoryStatistics();
     }
 }
 
 
 public class AnimalFactory
 {
+    public int GatoCount { get; private set; } = 0;
+    public int CachorroCount { get; private set; } = 0;
+    public int PeixeCount { get; private set; } = 0;
+
+    public void FactoryStatistics()
+    {
+        Console.WriteLine("Quantidade de gatos informados: " + GatoCount);
+        Console.WriteLine("Quantidade de cachorros informados: " + CachorroCount);
+        Console.WriteLine("Quantidade de peixes informados: " + PeixeCount);
+    }
+
     public Animal GetAnimal(string nome, string tipo)
     {
+        
         switch(tipo.ToLower())
         {
             case "gato":
+                GatoCount++;
                 return new Gato(nome); 
             case "cachorro":
+                CachorroCount++;
                 return new Cachorro(nome);
-            case "peixe":
-                return new Peixe(nome);
             default:
-                throw new InvalidDataException();
+                PeixeCount++;
+                return new Peixe(nome);              
         }
     }
 }
