@@ -8,15 +8,58 @@
 
 // var df = "LAB_PR_COV.csv".Open().Find("CORONAVAC").SumColumn("CORONAVAC");
 
-string[] keywords = {"CORONA", "BUTANTAN", "ASTRAZENECA", "FIOCRUZ", "PFIZER", "SINOVAC", "OXFORD","NAO"};
-"LAB_PR_COV.csv".Open().Unify(keywords).Write("RESULTADO.csv");
+// string[] keywords = {
+//     "CORONA", "BUTANTAN", "ASTRAZENECA", 
+//     "FIOCRUZ", "PFIZER", "SINOVAC", "OXFORD",
+//     "JANSSEN","NAO"};
 
+// ____________
+
+// string[] keywords = {
+//     "COR", "BUT", "AST", 
+//     "FIO", "PFI", "SIN", "OXF",
+//     "JANS","NAO"};
+
+// List<string[]> keyList = new List<string[]>();
+
+// keyList.Add(new string[] {"CORONAVAC", "CORO"});
+// keyList.Add(new string[] {"BUTANTAN", "IB", "BUN"});
+// keyList.Add(new string[] {"ASTRAZENECA", "AST", "ASAT", "AZT"});
+// keyList.Add(new string[] {"PFIZER", "FIZ", "PIF", "PF"});
+
+
+// var df = "LAB_PR_COV.csv".Open().Unify(keywords);
+// df.Write("RESULTADO.csv");
+
+// ____________
+
+
+// var newDf = "LAB_PR_COV.csv".Open();
+// foreach(var key in keywords)
+// {
+//     newDf = newDf.Remove(key);
+// }
+
+// newDf.Write("NOVA.csv");
 
 // string[,] keywordsPrecise = { 
 //     {"CORONAVAC", "CORONO", "COR"}, 
 //     {"BUTANTAN", "BUT", "IB"}, 
 //     {"ASTRAZENECA", "ASTRAZENICA", "AZTRA", "ASTRA"} };
 // // string[,]
+
+List<string[]> keyList = new List<string[]>();
+
+// keyList.Add(new string[] {"CORONAVAC", "CORO"});
+// keyList.Add(new string[] {"BUTANTAN", "IB", "BUN"});
+// keyList.Add(new string[] {"ASTRAZENECA", "AST", "ASAT", "AZT"});
+
+keyList.Add(new string[] {"PFIZER", "FIZ", "PIF", "PF"});
+
+
+var df = "LAB_PR_COV.csv".Open().FindByList(keyList);
+df.Write("TESTE.csv");
+
 
 public static class MyExtensionMethods
 {
@@ -129,6 +172,26 @@ public static class MyExtensionMethods
                 yield return it.Current;
     }
 
+    public static IEnumerable<string> FindByList(this IEnumerable<string> coll, List<string[]> keywordList)
+    {
+        var it = coll.GetEnumerator();
+        while(it.MoveNext())
+            foreach(var arr in keywordList)
+            {
+                if (arr.Any(it.Current.Contains))
+                    yield return it.Current;
+            }
+    }
+
+
+    public static IEnumerable<string> Remove(this IEnumerable<string> coll, string keyword)
+    {
+        var it = coll.GetEnumerator();
+        while(it.MoveNext())
+            if(!it.Current.Contains(keyword))
+                yield return it.Current;
+    }
+
     public static string SumColumn(this IEnumerable<string> coll, string keyword)
     {
         int sum = 0;
@@ -161,6 +224,7 @@ public static class MyExtensionMethods
 
         return KeywordGroups;
     }
+
 
     public static void Write(this IEnumerable<string> coll, string path)
     {
