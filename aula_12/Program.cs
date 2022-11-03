@@ -6,16 +6,17 @@
 //     .Take(1000)
 //     .ToList();
 
+// var df = "LAB_PR_COV.csv".Open().Find("CORONAVAC").SumColumn("CORONAVAC");
 
-// foreach(var i in coll)
-// {
-//     Console.WriteLine(i);
-// }
+string[] keywords = {"CORONA", "BUTANTAN", "ASTRAZENECA", "FIOCRUZ", "PFIZER", "SINOVAC", "OXFORD","NAO"};
+"LAB_PR_COV.csv".Open().Unify(keywords).Write("RESULTADO.csv");
 
 
-List<int> list = new List<int>();
-int[] arr = list.ToArray();
-
+// string[,] keywordsPrecise = { 
+//     {"CORONAVAC", "CORONO", "COR"}, 
+//     {"BUTANTAN", "BUT", "IB"}, 
+//     {"ASTRAZENECA", "ASTRAZENICA", "AZTRA", "ASTRA"} };
+// // string[,]
 
 public static class MyExtensionMethods
 {
@@ -107,7 +108,6 @@ public static class MyExtensionMethods
         return list;
     }
 
-
     public static IEnumerable<string> Open(this string file)
     {
         var stream = new StreamReader(file);
@@ -120,16 +120,60 @@ public static class MyExtensionMethods
 
         stream.Close();
     }
+
+    public static IEnumerable<string> Find(this IEnumerable<string> coll, string keyword)
+    {
+        var it = coll.GetEnumerator();
+        while(it.MoveNext())
+            if (it.Current.Contains(keyword))
+                yield return it.Current;
+    }
+
+    public static string SumColumn(this IEnumerable<string> coll, string keyword)
+    {
+        int sum = 0;
+        var it = coll.GetEnumerator();
+        while(it.MoveNext())
+        {
+            int i = 1; 
+            int result;
+            string splited = "";
+            do
+            {
+                splited = it.Current.Split(',')[i];  
+                i++;
+            } while(!int.TryParse(splited, out result));
+            
+            sum += result;
+        }
+
+        return $"{keyword},{sum}";
+    }
+
+    public static List<string> Unify(this IEnumerable<string> coll, string[] keywords)
+    {
+        List<string> KeywordGroups = new List<string>();
+        KeywordGroups.Add(coll.SumColumn("TOTAL"));
+        for(int i = 0; i < keywords.Length; i++)
+        {
+            KeywordGroups.Add(coll.Find(keywords[i]).SumColumn(keywords[i]));
+        }
+
+        return KeywordGroups;
+    }
+
+    public static void Write(this IEnumerable<string> coll, string path)
+    {
+        var stream =  new StreamWriter(path);
+
+        foreach(var item in coll)
+            stream.WriteLine(item);
+
+        stream.Close();
+    }
+
+
+    //TODO
+    //SEPARAR AS VACINAS POR GRUPOS
+
 }
-
-// var coll = infinity();
-
-// foreach(var x in coll)
-//     Console.WriteLine(x);
-
-
-// IEnumerable<long> infinity()
-// {
-//     for(long i = 0; true; i++)
-//         yield return i;
-// }
