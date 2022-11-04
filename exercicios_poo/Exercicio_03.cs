@@ -1,7 +1,6 @@
 namespace Exercicios.Ex03;
 
 
-
 public static class ProgramaEx03
 {
     public static void Programa()
