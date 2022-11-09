@@ -1,10 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-// var coll = "LAB_PR_COV.csv"
-//     .Open()
-//     .Skip(1)
-//     .Take(1000)
-//     .ToList();
+
 
 // var df = "LAB_PR_COV.csv".Open().Find("CORONAVAC").SumColumn("CORONAVAC");
 
@@ -48,17 +44,35 @@
 //     {"ASTRAZENECA", "ASTRAZENICA", "AZTRA", "ASTRA"} };
 // // string[,]
 
-List<string[]> keyList = new List<string[]>();
+// List<string[]> keyList = new List<string[]>();
 
-// keyList.Add(new string[] {"CORONAVAC", "CORO"});
-// keyList.Add(new string[] {"BUTANTAN", "IB", "BUN"});
-// keyList.Add(new string[] {"ASTRAZENECA", "AST", "ASAT", "AZT"});
+// // keyList.Add(new string[] {"CORONAVAC", "CORO"});
+// // keyList.Add(new string[] {"BUTANTAN", "IB", "BUN"});
+// // keyList.Add(new string[] {"ASTRAZENECA", "AST", "ASAT", "AZT"});
 
-keyList.Add(new string[] {"PFIZER", "FIZ", "PIF", "PF"});
+// keyList.Add(new string[] {"PFIZER", "FIZ", "PIF", "PF"});
 
 
-var df = "LAB_PR_COV.csv".Open().FindByList(keyList);
-df.Write("TESTE.csv");
+// var df = "LAB_PR_COV.csv".Open().FindByList(keyList);
+// df.Write("TESTE.csv");
+
+// var coll = "LAB_PR_COV.csv"
+//     .Open()
+//     .Skip(1)
+//     .Take(1000)
+//     .ToList();
+
+// foreach (var x in coll)
+// {
+//     print(x);
+// }
+
+
+MeuDelegate sqrt = Math.Sqrt;
+
+
+
+public delegate double MeuDelegate(double x);
 
 
 public static class MyExtensionMethods
@@ -164,6 +178,9 @@ public static class MyExtensionMethods
         stream.Close();
     }
 
+
+
+
     public static IEnumerable<string> Find(this IEnumerable<string> coll, string keyword)
     {
         var it = coll.GetEnumerator();
@@ -182,7 +199,6 @@ public static class MyExtensionMethods
                     yield return it.Current;
             }
     }
-
 
     public static IEnumerable<string> Remove(this IEnumerable<string> coll, string keyword)
     {
@@ -224,7 +240,6 @@ public static class MyExtensionMethods
 
         return KeywordGroups;
     }
-
 
     public static void Write(this IEnumerable<string> coll, string path)
     {
