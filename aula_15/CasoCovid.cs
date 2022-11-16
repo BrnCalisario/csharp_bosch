@@ -1,4 +1,3 @@
-
 public enum TipoDose
 {
     Indefinido = -1,
@@ -13,6 +12,7 @@ public class CasoCovid
     public string DataFinal { get; set; }
     public int IdadePaciente { get; set; }
     public List<Vacina> Vacinas { get; set; } = new List<Vacina>();
+    public List<TipoDose> Doses { get; set; }
 
     public CasoCovid(string evolucao, int idadePaciente)
     {
@@ -28,6 +28,8 @@ public class CasoCovid
         vacina.Lote = (lote != "\"\"" ? lote : "N/A");
         vacina.Fabricante = (fabricante !=  "\"\"" ? fabricante : "N/A");
         vacina.TipoDose = (TipoDose) tipoDose;
+
+        this.Doses.Add((TipoDose) tipoDose);
 
         Vacinas.Add(vacina);
     }
@@ -47,6 +49,29 @@ public class CasoCovid
             default:
                 return "Indefinido";
         }
+    }
+
+    public override string ToString()
+    {
+        string str = "";
+        str += "Idade do paciente: " + this.IdadePaciente;
+        str += "\nQuantidade de vacinas tomadas: " + this.Vacinas.Count();
+        str += "\nEvolução do Caso: " + this.EvolucaoCaso;
+        if (this.Vacinas.Count() > 0)
+        {
+            str += "\nVacinas:";
+        
+            foreach(var v in Vacinas)
+            {
+                str += $"\n--------------------------";
+                str += $"\nTipo: {v.TipoDose}";
+                str += $"\nData: {v.Data}";
+                str += $"\nLote: {v.Lote}";
+                str += $"\nFabri: {v.Fabricante}\n";
+            }
+        }
+        str += "\n--------------------------";
+        return str;
     }
 }
 
