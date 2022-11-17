@@ -4,8 +4,8 @@ public class Program
 {
     public static void Programa()
     {
-        long[] valores = {10, 6, 8};
-        int[] pesos = {3, 3, 4};
+        double[] valores = {10, 6, 8};
+        double[] pesos = {3, 3, 4};
 
         Console.WriteLine("Valores: " + valores.toString());
         Console.WriteLine("Média aritmética: " + valores.Aritmetica());
@@ -17,9 +17,9 @@ public class Program
 
 public static class Media
 {
-    public static double Aritmetica(this IEnumerable<long> coll) => coll.Sum() / coll.Count();
+    public static double Aritmetica(this IEnumerable<double> coll) => coll.Sum() / coll.Count();
     
-    public static double Ponderada(this IEnumerable<long> coll, IEnumerable<int> pesos)
+    public static double Ponderada(this IEnumerable<double> coll, IEnumerable<double> pesos)
     {
         if (coll.Count() != pesos.Count())
             throw new Exception("Pesos de nota não correspondem!");
@@ -31,14 +31,16 @@ public static class Media
         return soma / pesos.Sum();
     }
 
-    public static double Harmonica(this IEnumerable<long> coll)
+    public static double Harmonica(this IEnumerable<double> coll)
     {
-        var mmc = coll.MMC();
-
         double soma = 0;
-        for(int i = 0; i < coll.Count(); i++)
-            soma += mmc / coll.ToArray()[i];
-        return (coll.Count() * mmc) / soma;
+        var it = coll.GetEnumerator();
+
+        while(it.MoveNext())
+            soma += 1 / it.Current;
+    
+        return coll.Count() / soma;
+
     }
 
     public static string toString<T>(this IEnumerable<T> coll)
@@ -49,25 +51,4 @@ public static class Media
         return str + "]";
     }
 
-    public static double MMC(this IEnumerable<long> coll)
-    { 
-        var arr = coll.ToArray();
-        long aux = arr[0];
-
-        for(int i = 1; i < coll.Count(); i++)
-            aux = aux * (arr[i] / MDC(aux, arr[i]));
-
-        return aux;
-    }
-
-    public static long MDC(long a, long b)
-    {
-        while(b != 0)
-        {
-            long r = a % b;
-            a = b;
-            b = r;
-        }
-        return a;
-    }
 }
